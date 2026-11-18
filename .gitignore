@@ -1,0 +1,61 @@
+# ===== Segredos (NUNCA versionar) =====
+.env
+.env.*
+!.env.example
+.dev.vars
+secrets.toml
+**/config/smtp_password.txt
+**/config/database_url.txt
+
+# ===== Python =====
+.venv/
+.venv*/
+venv/
+env/
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+*.egg-info/
+
+# ===== Node / Next.js =====
+node_modules/
+.next/
+out/
+*.tsbuildinfo
+next-env.d.ts
+.vercel/
+.wrangler/
+
+# ===== Saídas geradas em runtime (contêm dados de leads) =====
+**/exports/*.xlsx
+**/exports/*.txt
+**/exports/*.html
+**/exports/lotes/
+**/exports/emails/
+**/exports/.lote.lock
+**/logs/*.log
+**/data/*.db
+**/data/sent_emails.txt
+**/web/index.html
+# Saídas antigas da raiz (antes do monorepo)
+/exports/
+
+# Mantém as pastas no repositório (sem os arquivos gerados)
+!**/exports/.gitkeep
+!**/logs/.gitkeep
+!**/data/.gitkeep
+
+# ===== Sistema operacional / editores =====
+.DS_Store
+Thumbs.db
+desktop.ini
+.vscode/
+.idea/
+*.swp
+*~
+
+# Configurações locais do Claude Code
+.claude/

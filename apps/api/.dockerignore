@@ -1,0 +1,14 @@
+# Só o necessário vai para a imagem. Segredos e dados locais NUNCA.
+.venv/
+**/__pycache__/
+.pytest_cache/
+.ruff_cache/
+.env
+.env.*
+data/
+exports/
+logs/
+tests/
+tests_api/
+cloudflare/
+requirements-dev.txt

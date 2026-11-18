@@ -1,0 +1,153 @@
+# ============================================================================
+# NICHO DE EXEMPLO — fictício, só para mostrar o formato.
+#
+# Cada empresa cliente tem o SEU nicho, guardado no banco e editado pelo dono
+# da plataforma em "Plataforma → Empresas → Nicho". Este arquivo é o ponto de
+# partida de toda empresa nova. Não coloque aqui dados de cliente real.
+#
+# Exemplo: um fornecedor de equipamentos para cozinhas profissionais que quer
+# encontrar restaurantes, hotéis e redes de alimentação.
+#
+# Como o casamento de termos funciona (em todo o arquivo):
+#   - acentos e maiúsculas são ignorados ("cozinha" == "Cozinha" == "cozínha");
+#   - frase (com espaço) casa em qualquer lugar do texto;
+#   - palavra única casa só como palavra inteira ("bar" não casa "barato");
+#   - palavra terminada em * casa pelo começo ("restaurant*" casa restaurante e
+#     restaurantes).
+# Guia completo: docs/CONFIGURAR-NICHO.md
+# ============================================================================
+
+nome: Exemplo — equipamentos para cozinha profissional
+descricao: >
+  Encontra restaurantes, hotéis, redes de alimentação e cozinhas industriais
+  que precisam de equipamentos e manutenção de cozinha profissional.
+
+busca:
+  # Cada item vira uma busca na web. Escreva como o CLIENTE do seu cliente se
+  # descreve no site (não como você descreveria o produto).
+  palavras_chave:
+    - restaurante com cozinha própria
+    - rede de restaurantes
+    - hotel com restaurante
+    - buffet e eventos
+    - cozinha industrial
+    - refeições coletivas para empresas
+    - padaria e confeitaria
+    - rede de lanchonetes
+  # Buscas de comprador "certo": ~40% de cada lote sai daqui.
+  buscas_premium:
+    - rede de restaurantes com várias unidades
+    - empresa de refeições coletivas
+    - hotel com centro de eventos
+  # Variações que se combinam com as palavras-chave para achar empresas novas.
+  modificadores: ["", "", "empresa", "grupo", "site oficial", "fale conosco", "matriz"]
+  formas: ["", "", "delivery", "self-service", "à la carte", "industrial"]
+  # Cidades/estados que entram nas buscas (repita para dar mais peso).
+  regioes: ["", "", "São Paulo", "São Paulo", "Rio de Janeiro", "Minas Gerais",
+            "Paraná", "Santa Catarina", "Rio Grande do Sul", "Bahia", "Pernambuco",
+            "Goiás", "Distrito Federal"]
+  # Pedaços de domínio/título que denunciam que o resultado NÃO é um cliente
+  # (portais do setor, marketplaces de delivery, concorrentes).
+  ruido: ["guiadegastronomia", "aplicativodedelivery", "revistadocozinheiro"]
+  # Frases de quem VENDE para o mesmo comprador (concorrente/fornecedor, não lead).
+  fornecedores: ["fabricante de equipamentos", "loja de equipamentos para restaurante",
+                 "distribuidor de fornos"]
+  # Pedaços de link das páginas internas que descrevem a OPERAÇÃO do lead —
+  # o motor visita essas páginas para achar os sinais de necessidade.
+  paginas_operacao: ["cardapio", "menu", "unidades", "eventos", "servicos", "cozinha"]
+  # Títulos de site que descrevem o SERVIÇO e não o nome da empresa
+  # (o motor não usa esses títulos como nome).
+  titulos_de_servico: ["restaurante em", "buffet para", "delivery de", "marmitex"]
+  # Base curada opcional: domínios que você já sabe que são do nicho. Completa o
+  # lote quando a busca na web rende pouco. Um por item, ex.: empresa.com.br
+  base_curada: []
+
+pontuacao:
+  hot: 60                         # nota >= 60 -> HOT
+  warm: 50                        # nota >= 50 -> WARM; abaixo disso nem entra
+  max_score: 100
+  # Sem nenhum sinal de NECESSIDADE o lead é COLD, mesmo que o setor bata.
+  exige_sinal_de_necessidade: true
+  # Evidências de que a empresa PRECISA do que o cliente vende.
+  necessidades:
+    cozinha industrial: 14
+    cozinha própria: 10
+    refeições coletivas: 13
+    capacidade de refeições: 10
+    várias unidades: 9
+    centro de eventos: 9
+    buffet: 8
+    produção própria: 8
+    forno: 6
+    câmara fria: 9
+    manutenção de equipamentos: 10
+  # O tipo de negócio.
+  segmentos:
+    restaurante: 10
+    hotel: 9
+    buffet: 9
+    padaria: 7
+    refeições coletivas: 11
+    lanchonete: 6
+  # Posição/porte na cadeia.
+  tipos_empresa:
+    rede: 6
+    franquia: 5
+    grupo: 3
+    matriz e filiais: 4
+  # Quem já vende a mesma coisa: peso NEGATIVO (concorrente não é cliente).
+  concorrentes:
+    fabricante de equipamentos para cozinha: -35
+    assistência técnica de fornos: -25
+
+# Catálogo do cliente. Cada solução aparece na coluna "Soluções" quando o site
+# do lead mostra um dos SINAIS. Termos sem acento ou com acento, tanto faz.
+solucoes:
+  - nome: Fornos e cocção
+    curto: Fornos
+    sinais: ["forno", "cocção", "chapa", "fogão industrial", "cozinha industrial"]
+    decisor: Chef executivo / Gerente de operações
+  - nome: Refrigeração
+    curto: Frio
+    sinais: ["câmara fria", "refrigeração", "freezer", "conservação de alimentos"]
+    decisor: Gerente de operações
+  - nome: Lavagem
+    curto: Lavagem
+    sinais: ["lava-louças", "lavagem de louças", "higienização"]
+    decisor: Gerente de operações
+  - nome: Manutenção preventiva
+    curto: Manutenção
+    sinais: ["manutenção de equipamentos", "manutenção preventiva", "assistência técnica própria"]
+    decisor: Gerente de manutenção / Compras
+    # Exemplo de regra: se já vai "Fornos e cocção", não precisa repetir aqui.
+    oculta_se: []
+
+decisores:
+  # Cargo sugerido quando o site não mostra nenhuma pessoa com cargo.
+  padrao: Sócio / Diretor
+  # Cargos do NICHO (os genéricos — presidente, diretor, gerente, compras... — já
+  # vêm no motor). Prioridade: 1 a 99, maior = mais decisor.
+  cargos:
+    - {termo: chef executivo, rotulo: Chef executivo, prioridade: 90}
+    - {termo: gerente de operações, rotulo: Gerente de operações, prioridade: 88}
+    - {termo: gerente de alimentos e bebidas, rotulo: Gerente de A&B, prioridade: 89}
+    - {termo: nutricionista responsável, rotulo: Nutricionista responsável, prioridade: 70}
+
+# Tamanho do lead pelo que ele publica ("12 unidades", "rede de 40 lojas").
+# Desligado (ativo: false), o porte vem só dos dados da Receita (capital social).
+porte:
+  ativo: true
+  rotulo: unidades
+  unidades: ["unidades", "lojas", "restaurantes", "filiais"]
+  contexto: ["rede de", "rede com"]
+  media_a_partir_de: 5
+  grande_a_partir_de: 20
+  # Com N+ unidades declaradas o lead entra mesmo com nota baixa. 0 = desligado
+  # (recomendado até conhecer bem o nicho: número solto em site engana).
+  qualifica_a_partir_de: 0
+
+email:
+  # Caixas que caem na OPERAÇÃO do lead (ex.: "cozinha@"): entram como "Operação".
+  palavras_operacao: ["cozinha", "producao", "eventos"]
+  # Palavras que NUNCA são nome de pessoa num e-mail deste nicho (ex.: "buffet@").
+  nao_e_pessoa: ["restaurante", "buffet", "delivery", "lanchonete"]

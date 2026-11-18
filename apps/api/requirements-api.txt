@@ -1,0 +1,19 @@
+# Dependências da API (imagem do Container na Cloudflare).
+
+# --- motor de prospecção (app/) ---
+ddgs>=9.0.0              # busca web (DuckDuckGo e outros), sem API paga
+openpyxl>=3.1.0          # gera os .xlsx
+PyYAML>=6.0              # lê config/config.yaml
+requests>=2.31.0         # baixa as homepages
+beautifulsoup4>=4.12.0   # extrai texto do HTML
+lxml>=4.9.0              # parser HTML do BeautifulSoup
+psycopg2-binary>=2.9.0   # Postgres (Neon)
+# Fernet: cifra a senha de app do remetente (app/secret_box.py).
+# <45 de propósito: a partir da 45 só há wheel macOS arm64 e a máquina de
+# desenvolvimento é Intel x86_64.
+cryptography<45
+
+# --- API HTTP ---
+fastapi>=0.115,<1
+uvicorn[standard]>=0.30
+PyJWT>=2.9               # token de sessão (cookie httpOnly)

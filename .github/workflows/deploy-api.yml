@@ -1,0 +1,74 @@
+# Publica a API (Cloudflare) quando apps/api muda na main.
+# Ordem: testes -> migrations no Neon -> deploy. Se um passo falha, o próximo não roda.
+# O front NÃO é publicado aqui: a Vercel publica sozinha a partir do GitHub.
+name: Deploy da API
+
+on:
+  push:
+    branches: [main]
+    paths: ["apps/api/**", ".github/workflows/deploy-api.yml"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy-api
+  cancel-in-progress: false
+
+jobs:
+  testes:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/api
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: apps/api/requirements*.txt
+      - run: pip install -r requirements-dev.txt
+      - run: python -m pytest tests_api -q
+
+  migrations:
+    needs: testes
+    runs-on: ubuntu-latest
+    environment: producao
+    defaults:
+      run:
+        working-directory: apps/api
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: apps/api/requirements*.txt
+      - run: pip install -r requirements-api.txt
+      - name: Aplicar migrations no Neon
+        run: python -m api.migrate
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+
+  deploy:
+    needs: migrations
+    runs-on: ubuntu-latest
+    environment: producao
+    defaults:
+      run:
+        working-directory: apps/api/cloudflare
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: apps/api/cloudflare/package-lock.json
+      - run: npm ci
+      - name: Publicar Worker + Container
+        run: npx wrangler deploy
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}

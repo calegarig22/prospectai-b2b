@@ -1,0 +1,106 @@
+# ProspectAI — configuração TÉCNICA do motor (igual para todas as empresas).
+#
+# O que é do NEGÓCIO de cada cliente (palavras de busca, pontuação, catálogo de
+# soluções, decisores, porte) NÃO fica aqui: fica no NICHO de cada empresa, no
+# banco (modelo inicial em config/nicho.exemplo.yaml).
+
+search:
+  max_results: 30        # mais resultados por busca = mais empresas inéditas por rodada
+  region: br-pt          # Brasil: busca em PT-BR
+  safesearch: moderate   # off | moderate | strict
+  pause_seconds: 1.0     # pausa entre buscas (modo sequencial; menor = mais rápido)
+  max_retries: 3         # tentativas por palavra-chave em caso de falha de rede
+  query_workers: 4       # QUERIES em paralelo (cada uma já abre os 7 motores juntos).
+                         # 1 = modo seguro sequencial.
+                         # NÃO SUBA para 8: testado em 17/08/2026 e os motores começam
+                         # a barrar — 2 de 14 queries voltaram vazias, a entrega caiu de
+                         # 10/10 para 8/10 e o lote saiu com 2 HOT em vez de 10. Economiza
+                         # ~10s e custa 20% da entrega: péssima troca. 4 é o teto seguro.
+  gather_budget_seconds: 0   # TETO de tempo da fase de busca (rede de segurança anti
+                             # rate-limit). 0 = automático (max(35, alvo*0.8)s). Ao
+                             # estourar, para a busca e completa pela base curada
+                             # -> tempo de entrega GARANTIDO mesmo com motores lentos.
+
+# Enriquecimento: acessa a homepage de cada domínio para coletar conteúdo real.
+fetch:
+  timeout_seconds: 6         # MODO RÁPIDO: desiste mais rápido de sites lentos
+  max_text_chars: 10000      # limite de texto visível capturado por página
+  # 40: a fase de filtro baixa a homepage de ~48 candidatos, cada um num domínio
+  # DIFERENTE (não sobrecarrega ninguém). Com 24 eram 2 ondas e a segunda esperava
+  # o site mais lento da primeira; com 40 quase tudo cabe numa onda só.
+  max_workers: 40            # mais downloads simultâneos (pontuação das homepages)
+  user_agent: "Mozilla/5.0 (compatible; ProspectAI/1.0)"
+
+# Enriquecimento profundo nos leads HOT (Contato/Sobre/Equipe/Operação).
+enrichment:
+  max_workers: 20                                 # leads em paralelo (cada um visita páginas em paralelo)
+  max_product_pages: 2                            # páginas de operação visitadas -> mais necessidades detectadas
+  # VELOCIDADE: buscas WEB de contato (CNPJ/telefone em diretórios) são o gargalo.
+  #   all = roda em todos WARM/HOT que faltam contato (mais completo)
+  #   hot = só nos HOT (mais rápido) — padrão | off = nunca (só página + JSON-LD + MX)
+  web_contact_lookup: all
+  # QUALIFICAÇÃO DE CONTATO: false = só entrega e-mail REAL (não inventa contato@).
+  # true = volta a inferir contato@dominio quando o domínio aceita e-mail (tem MX).
+  infer_role_email: false
+
+# Blacklist GENÉRICA: domínios que nunca são lead em nicho nenhum. O que é ruído
+# só num nicho vai em "busca.ruido" do nicho da empresa.
+blacklist:
+  - wikipedia.org
+  - bing.com
+  - google.com
+  - facebook.com
+  - instagram.com
+  - linkedin.com
+  - youtube.com
+  - twitter.com
+  - x.com
+  - pinterest.com
+  - reddit.com
+  - tiktok.com
+  - medium.com
+  - amazon.com
+  - alibaba.com
+  - aliexpress.com
+  - made-in-china.com
+  - ebay.com
+  - mercadolivre.com.br
+  - mercadolibre.com
+  - shopee.com.br
+  - booking.com
+  - tripadvisor.com
+  - tripadvisor.com.br
+  - expedia.com
+  - indiamart.com
+  - thomasnet.com
+  - europages.com
+  - kompass.com
+  - dnb.com
+  - crunchbase.com
+  - yelp.com
+  - yellowpages.com
+  - glassdoor.com
+  - zoominfo.com
+  - manta.com
+  - econodata.com.br
+  - cnpj.biz
+  - casadosdados.com.br
+  - empresascnpj.com
+  - solutudo.com.br
+  - telelistas.net
+  - apontador.com.br
+  - gov.br
+
+# Disparo de e-mails. Cada vendedor dispara da PRÓPRIA caixa (cadastrada pelo
+# admin da empresa); aqui ficam só o ritmo e as travas.
+outreach:
+  daily_limit: 10                       # teto por remetente por dia quando o plano não define
+  delay_min: 30                         # intervalo entre envios (s) — parece humano
+  delay_max: 90
+  warmup: true                          # rampa de aquecimento: 3,4,6,8,10,12,15,18,20/dia
+  validate_emails: true                 # confere MX antes de disparar
+  subject: ""                           # vazio = assunto da 1ª linha do template .txt
+
+logging:
+  level: INFO            # DEBUG | INFO | WARNING | ERROR
+  directory: logs

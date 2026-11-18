@@ -1,0 +1,68 @@
+# Verificações de todo Pull Request. Nada é publicado aqui.
+name: CI
+
+on:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  api:
+    name: API (testes)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/api
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: apps/api/requirements*.txt
+      - run: pip install -r requirements-dev.txt
+      - name: Checagem estática
+        run: ruff check --select F app api discover.py tests_api
+      - name: Migrations aplicam do zero (SQLite temporário)
+        run: PROSPECT_SQLITE_PATH=$RUNNER_TEMP/ci.db python -m api.migrate
+      - name: Testes da API (isolamento entre empresas incluído)
+        run: python -m pytest tests_api -q
+      - name: Testes do motor (sem rede)
+        run: python tests/test_contatos.py
+
+  web:
+    name: Front (tipos, lint, build)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/web
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: apps/web/package-lock.json
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm run lint
+      - run: npm run build
+        env:
+          API_URL: https://api.exemplo.invalid
+
+  worker:
+    name: Worker da Cloudflare (tipos)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/api/cloudflare
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: apps/api/cloudflare/package-lock.json
+      - run: npm ci
+      - run: npm run typecheck

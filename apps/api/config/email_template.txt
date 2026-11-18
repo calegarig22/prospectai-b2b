@@ -1,0 +1,22 @@
+# Template de e-mail (texto puro) — MODELO GENÉRICO do ProspectAI.
+# A 1ª linha define o assunto. Linhas começando com # são ignoradas.
+# Campos disponíveis: {company}  {solucoes}  {cargo}  {city}
+#   {solucoes} = as soluções do catálogo do cliente que o site da empresa indica que ela precisa.
+#   {cargo}    = o cargo decisor identificado (ou o alvo recomendado).
+# Cada usuário troca o seu na tela "Enviar E-mails". Mantenha CURTO: e-mail frio longo não é lido.
+Assunto: Uma ideia para a {company}
+
+Olá,
+
+Vi o site da {company} e acredito que podemos ajudar com {solucoes}.
+
+Trabalhamos com empresas como a sua e costumamos falar direto com quem cuida
+disso — geralmente o(a) {cargo}. Faz sentido conversarmos 15 minutos esta semana?
+
+Se não for com você, pode me indicar a pessoa certa?
+
+Obrigado,
+[Seu nome]
+[Sua empresa]
+
+Se não quiser receber mais mensagens, responda com REMOVER.
