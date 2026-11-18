@@ -54,3 +54,9 @@ apps/api/
 apps/web/       Next.js: login, painel, e-mails, admin, plataforma
 docs/           guias: configurar nicho, nova empresa, publicação
 ```
+
+## Direitos autorais
+
+© 2026 Gustavo Fiedler Calegari. Todos os direitos reservados.
+
+Este código está publicado apenas para avaliação de portfólio. Não é permitido copiar, modificar, distribuir ou usar comercialmente, no todo ou em parte, sem autorização por escrito do autor.
